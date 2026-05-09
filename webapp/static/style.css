@@ -39,6 +39,10 @@ body {
     line-height: 1.6;
     min-height: 100vh;
     display: flex;
+    /* Explicit base — prevents iOS auto-zoom on inputs (needs ≥16px)
+       and gives mobile text a comfortable reading size. */
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
 }
 
 a { color: var(--accent); text-decoration: none; }
@@ -405,29 +409,31 @@ a:hover { color: var(--accent-hover); }
 
     /* Hero */
     .hero { padding: 36px 12px 32px; }
-    .hero h1 { font-size: 26px; }
-    .hero-sub { font-size: 15px; }
+    .hero h1 { font-size: 28px; }
+    .hero-sub { font-size: 16px; }
     .hero-stats { gap: 20px; }
     .stat-num { font-size: 24px; }
 
     /* Pattern grid */
-    .pattern-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+    .pattern-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
     .pattern-card { padding: 14px; }
     .card-number { font-size: 22px; }
-    .card-name { font-size: 14px; }
+    .card-name { font-size: 15px; }
 
     /* Category */
     .category-header { gap: 10px; }
     .category-icon { font-size: 24px; }
-    .category-title { font-size: 18px; }
+    .category-title { font-size: 19px; }
+    .category-desc { font-size: 14px; }
 
     /* Pattern page */
-    .pattern-header h1 { font-size: 24px; }
+    .pattern-header h1 { font-size: 26px; }
+    .pattern-badge { font-size: 13px; }
 
     /* Tabs — scrollable on mobile */
     .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; gap: 0; scrollbar-width: none; }
     .tabs::-webkit-scrollbar { display: none; }
-    .tab { padding: 10px 14px; font-size: 13px; white-space: nowrap; flex-shrink: 0; }
+    .tab { padding: 11px 14px; font-size: 14px; white-space: nowrap; flex-shrink: 0; }
 
     /* Console — optimized for mobile */
     .console-toolbar {
@@ -436,45 +442,67 @@ a:hover { color: var(--accent-hover); }
     }
     .console-actions-left { justify-content: center; flex-wrap: wrap; }
     .console-actions-right { justify-content: center; width: 100%; }
-    .btn-run { justify-content: center; flex: 1; padding: 10px 18px; }
-    .btn-verify { justify-content: center; flex: 1; padding: 10px 18px; }
+    .btn { font-size: 14px; }
+    .btn-sm { font-size: 13px; }
+    .btn-run { justify-content: center; flex: 1; padding: 10px 18px; font-size: 14px; }
+    .btn-verify { justify-content: center; flex: 1; padding: 10px 18px; font-size: 14px; }
 
     #code-editor-mount {
         min-height: 250px;
         max-height: 60vh;
     }
-    /* Prevent iOS zoom on focus — font must be >= 16px */
+    /* Prevent iOS zoom on focus — font must be ≥ 16px */
     #code-editor-mount .cm-content {
         font-size: 16px;
     }
 
-    .console-output { font-size: 12px; padding: 12px; min-height: 80px; max-height: 300px; }
+    .console-output { font-size: 14px; padding: 12px; min-height: 80px; max-height: 300px; }
 
-    /* Code blocks — prevent horizontal overflow */
+    /* Code blocks — readable size, still scrollable horizontally */
     .code-block { border-radius: var(--radius-sm); }
-    .source pre { font-size: 11px; padding: 10px; }
-    .source td.linenos { padding: 10px 6px; }
+    .source pre { font-size: 14px; padding: 12px; line-height: 1.55; }
+    .source pre code { font-size: inherit; }
+    .source td.linenos { padding: 12px 8px; }
+    .source td.linenos pre { font-size: 14px; }
 
-    /* Handout markdown */
-    .markdown-body pre { padding: 12px; font-size: 12px; }
-    .markdown-body h1 { font-size: 22px; }
-    .markdown-body h2 { font-size: 18px; }
+    /* Handout markdown — readable body + code */
+    .markdown-body { font-size: 16px; }
+    .markdown-body p { font-size: 16px; line-height: 1.65; margin-bottom: 14px; }
+    .markdown-body li { font-size: 16px; line-height: 1.6; }
+    .markdown-body code { font-size: 14px; padding: 2px 5px; }
+    .markdown-body pre { padding: 12px; font-size: 14px; }
+    .markdown-body pre code { font-size: 14px; line-height: 1.55; }
+    .markdown-body h1 { font-size: 24px; }
+    .markdown-body h2 { font-size: 20px; }
+    .markdown-body h3 { font-size: 17px; }
+
+    /* Markdown tables — wrap in horizontal scroll so they don't squish text */
+    .markdown-body table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; font-size: 14px; }
+    .markdown-body th, .markdown-body td { padding: 8px 10px; }
 
     /* Pattern nav — stack vertically on small screens */
     .pattern-nav { flex-direction: column; gap: 10px; margin-top: 24px; padding-top: 16px; }
-    .nav-btn { width: 100%; justify-content: center; padding: 10px 16px; }
+    .nav-btn { width: 100%; justify-content: center; padding: 12px 16px; }
     .nav-btn.next { flex-direction: row-reverse; }
+    .nav-btn span { font-size: 15px; }
+    .nav-btn small { font-size: 12px; }
 
     /* Topbar */
     .topbar { padding: 0 12px; }
-    .topbar-title { font-size: 14px; }
+    .topbar-title { font-size: 15px; }
+
+    /* Sidebar — touch-friendly */
+    .nav-item { font-size: 15px; padding: 11px 20px; }
+    .nav-num { width: 26px; height: 26px; font-size: 12px; }
 }
 
 /* ===== Responsive — Small phones ===== */
+/* Don't shrink further — readability is more important than fitting more.
+   Only adjust layout (single-column grids, full-width buttons). */
 @media (max-width: 400px) {
-    .content { padding: 10px; }
-    .hero h1 { font-size: 22px; }
-    .hero-sub { font-size: 14px; }
+    .content { padding: 12px; }
+    .hero h1 { font-size: 24px; }
+    .hero-sub { font-size: 15px; }
     .pattern-grid { grid-template-columns: 1fr; }
     .hero-stats { flex-wrap: wrap; gap: 16px; }
     .console-actions-left { flex-direction: column; }

@@ -8,9 +8,11 @@
   "postCreateCommand": "pip install --user uv && cd webapp && $HOME/.local/bin/uv sync",
 
   // Auto-start the FastAPI server on every container start.
-  // Uses `uv run uvicorn` (the exact command proven to work manually).
-  // nohup + & + disown fully detaches it so the postStart shell can exit.
-  "postStartCommand": "cd /workspaces/python-design-patterns/webapp && nohup uv run uvicorn app:app --host 0.0.0.0 --port 8000 > /tmp/uvicorn.log 2>&1 & disown",
+  // - `git pull` ensures the codespace gets latest source on each resume.
+  // - `uv run uvicorn ... --reload` so subsequent in-codespace edits or
+  //   git pulls hot-reload without a container restart.
+  // - nohup + & + disown fully detaches uvicorn so postStart returns.
+  "postStartCommand": "cd /workspaces/python-design-patterns && git pull --ff-only origin main >/tmp/git-pull.log 2>&1 || true; cd webapp && nohup uv run uvicorn app:app --host 0.0.0.0 --port 8000 --reload > /tmp/uvicorn.log 2>&1 & disown",
 
   // Forward the FastAPI port. `visibility: private` means only your
   // authenticated GitHub account can open the forwarded URL — perfect
