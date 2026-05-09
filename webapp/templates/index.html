@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Design Patterns in Python{% endblock %}
+{% block topbar_title %}Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Design Patterns in Python</h1>
+    <p class="hero-sub">A hands-on course covering 25 design patterns &mdash; from classic Gang of Four to modern patterns beyond GoF. Each lesson includes real-world analogies, code examples, and an interactive Python console.</p>
+    <div class="hero-stats">
+        <div class="stat"><span class="stat-num">25</span><span class="stat-label">Patterns</span></div>
+        <div class="stat"><span class="stat-num">50</span><span class="stat-label">Examples</span></div>
+        <div class="stat"><span class="stat-num">&#x26A1;</span><span class="stat-label">Interactive</span></div>
+    </div>
+</section>
+
+{% set cat_icons = {"Behavioral": "💬", "Creational": "🏭", "Structural": "🧱", "Beyond GoF": "🚀"} %}
+{% set cat_colors = {"Behavioral": "blue", "Creational": "green", "Structural": "orange", "Beyond GoF": "purple"} %}
+
+{% for category, patterns_list in grouped.items() %}
+<section class="category-section">
+    <div class="category-header">
+        <span class="category-icon">{{ cat_icons.get(category, "&#x1F4D6;") }}</span>
+        <div>
+            <h2 class="category-title">{{ category }} Patterns</h2>
+            <p class="category-desc">{{ patterns_list[0].category_desc }}</p>
+        </div>
+    </div>
+    <div class="pattern-grid">
+        {% for p in patterns_list %}
+        <a href="/pattern/{{ p.slug }}" class="pattern-card {{ cat_colors.get(category, 'blue') }}">
+            <div class="card-number">{{ p.number }}</div>
+            <div class="card-name">{{ p.name }}</div>
+            <div class="card-badge {{ cat_colors.get(category, 'blue') }}">{{ category }}</div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endfor %}
+{% endblock %}

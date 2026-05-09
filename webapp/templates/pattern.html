@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% set current_slug = pattern.slug %}
+{% block title %}{{ pattern.name }} &mdash; Design Patterns{% endblock %}
+{% block topbar_title %}{{ pattern.number }}. {{ pattern.name }}{% endblock %}
+
+{% block content %}
+<div class="pattern-header">
+    <span class="pattern-badge">{{ pattern.category }}</span>
+    <h1>{{ pattern.name }} Pattern</h1>
+</div>
+
+<div class="tabs" role="tablist">
+    <button class="tab active" data-tab="handout" role="tab">Handout</button>
+    <button class="tab" data-tab="good" role="tab">Clean Code</button>
+    <button class="tab" data-tab="bad" role="tab">Bad Example</button>
+    <button class="tab tab-accent" data-tab="console" role="tab">Try It</button>
+</div>
+
+<div class="tab-panels">
+    <div class="tab-panel active" id="panel-handout">
+        <div class="handout-content markdown-body">
+            {{ handout_html | safe }}
+        </div>
+    </div>
+
+    <div class="tab-panel" id="panel-good">
+        <div class="code-block">
+            {{ good_html | safe }}
+        </div>
+    </div>
+
+    <div class="tab-panel" id="panel-bad">
+        <div class="code-block">
+            {{ bad_html | safe }}
+        </div>
+    </div>
+
+    <div class="tab-panel" id="panel-console">
+        <div class="console-container">
+            <div class="console-toolbar">
+                <div class="console-actions-left">
+                    <button class="btn btn-sm" id="load-good">Load Clean Example</button>
+                    <button class="btn btn-sm btn-outline" id="load-bad">Load Bad Example</button>
+                    <button class="btn btn-sm btn-challenge" id="load-challenge">Load Challenge</button>
+                </div>
+                <div class="console-actions-right">
+                    <button class="btn btn-verify" id="verify-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>
+                        Verify
+                    </button>
+                    <button class="btn btn-run" id="run-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+                        Run
+                    </button>
+                </div>
+            </div>
+            <div class="console-editor-wrap" id="code-editor-mount"></div>
+            <div class="resize-handle" id="resize-handle" title="Drag to resize"></div>
+            <div class="console-output-header">
+                <span>Output</span>
+                <span class="output-status" id="output-status"></span>
+            </div>
+            <pre class="console-output" id="console-output">Click "Run" to execute the code...</pre>
+        </div>
+    </div>
+</div>
+
+<div class="pattern-nav">
+    {% if prev %}
+    <a href="/pattern/{{ prev.slug }}" class="nav-btn prev">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        <div>
+            <small>Previous</small>
+            <span>{{ prev.name }}</span>
+        </div>
+    </a>
+    {% else %}
+    <div></div>
+    {% endif %}
+    {% if next %}
+    <a href="/pattern/{{ next.slug }}" class="nav-btn next">
+        <div>
+            <small>Next</small>
+            <span>{{ next.name }}</span>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+    </a>
+    {% else %}
+    <div></div>
+    {% endif %}
+</div>
+
+<script>
+    const SLUG = "{{ pattern.slug }}";
+    const GOOD_SOURCE = {{ good_source | tojson }};
+    const BAD_SOURCE = {{ bad_source | tojson }};
+</script>
+<script type="module">
+    import { basicSetup, python, oneDark, EditorView, keymap, EditorState } from "/static/codemirror-bundle.js";
+
+    const editorTheme = EditorView.theme({
+        '&': { fontSize: '14px', minHeight: '400px', maxHeight: '75vh', overflow: 'auto' },
+        '.cm-scroller': { fontFamily: "'JetBrains Mono', 'Fira Code', monospace", overflow: 'auto' },
+        '.cm-content': { minHeight: '400px' },
+        '.cm-gutters': { backgroundColor: 'transparent', borderRight: '1px solid rgba(255,255,255,0.08)' },
+    });
+
+    const runBinding = keymap.of([
+        { key: 'Ctrl-Enter', run: () => { document.getElementById('run-btn').click(); return true; } },
+        { key: 'Cmd-Enter', run: () => { document.getElementById('run-btn').click(); return true; } },
+    ]);
+
+    window.cmEditor = new EditorView({
+        state: EditorState.create({
+            doc: GOOD_SOURCE,
+            extensions: [basicSetup, python(), oneDark, editorTheme, runBinding, EditorView.lineWrapping],
+        }),
+        parent: document.getElementById('code-editor-mount'),
+    });
+
+    window.dispatchEvent(new Event('cm-ready'));
+</script>
+<script src="/static/console.js"></script>
+{% endblock %}

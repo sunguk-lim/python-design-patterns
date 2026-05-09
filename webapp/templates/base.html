@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Design Patterns in Python{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>{{ pygments_css | safe }}</style>
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- CodeMirror 6 via ESM CDN -->
+</head>
+<body>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="logo">
+                <span class="logo-icon">🏗</span>
+                <span>Design Patterns</span>
+            </a>
+            <button class="sidebar-close" id="sidebar-close" aria-label="Close sidebar">&times;</button>
+        </div>
+        <div class="sidebar-nav">
+            {% set categories = ["Behavioral", "Creational", "Structural", "Beyond GoF"] %}
+            {% for cat in categories %}
+            <div class="nav-group">
+                <div class="nav-group-title">{{ cat }}</div>
+                {% for p in patterns %}
+                {% if p.category == cat %}
+                <a href="/pattern/{{ p.slug }}"
+                   class="nav-item {% if current_slug is defined and current_slug == p.slug %}active{% endif %}">
+                    <span class="nav-num">{{ p.number }}</span>
+                    {{ p.name }}
+                </a>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </nav>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <main class="main-content">
+        <header class="topbar">
+            <button class="hamburger" id="hamburger" aria-label="Open sidebar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <div class="topbar-title">{% block topbar_title %}Design Patterns in Python{% endblock %}</div>
+        </header>
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const hamburger = document.getElementById('hamburger');
+        const sidebarClose = document.getElementById('sidebar-close');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        function openSidebar() {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        hamburger.addEventListener('click', openSidebar);
+        sidebarClose.addEventListener('click', closeSidebar);
+        overlay.addEventListener('click', closeSidebar);
+
+        // Swipe to close sidebar
+        let touchStartX = 0;
+        sidebar.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+        sidebar.addEventListener('touchend', (e) => {
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            if (dx < -60) closeSidebar();
+        }, { passive: true });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
