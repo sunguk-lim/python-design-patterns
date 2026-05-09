@@ -1,11 +1,33 @@
 #!/usr/bin/env bash
 # Auto-start the FastAPI webapp inside the codespace.
 # Called from devcontainer.json postStartCommand on every container start.
-set -euo pipefail
 
 WEBAPP=/workspaces/python-design-patterns/webapp
 LOG=/tmp/uvicorn.log
 
+# DEBUG: Prove the script ran. Marker file fetchable via the
+# debug HTTP server below.
+date '+%Y-%m-%d %H:%M:%S' > /tmp/poststart.marker
+{
+  echo "===== $(date) ====="
+  echo "[start-server] script invoked"
+  echo "[start-server] cwd=$(pwd) user=$(whoami) home=$HOME PATH=$PATH"
+  echo "[start-server] webapp dir contents:"
+  ls -la "$WEBAPP" 2>&1 || true
+  echo "[start-server] .venv check:"
+  ls -la "$WEBAPP/.venv/bin/uvicorn" 2>&1 || true
+} >> "$LOG"
+
+# DEBUG HTTP server on port 9999 serving /tmp so we can fetch logs
+# from outside via `gh codespace ports forward 9999:19999` (no SSH needed).
+# Launched BEFORE `set -e` so it always runs even if later steps fail.
+if ! pgrep -f 'http.server 9999' >/dev/null; then
+  nohup python3 -m http.server 9999 --directory /tmp >>/tmp/dbg.log 2>&1 &
+  disown
+  echo "[start-server] debug http server launched on :9999" >> "$LOG"
+fi
+
+set -euo pipefail
 cd "$WEBAPP"
 
 # Self-heal: if deps weren't installed (postCreate failed silently),
