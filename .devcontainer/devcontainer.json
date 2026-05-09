@@ -7,10 +7,11 @@
   // PATH-not-yet-loaded issues right after pip --user install.
   "postCreateCommand": "pip install --user uv && cd webapp && $HOME/.local/bin/uv sync",
 
-  // Auto-start the FastAPI server on every container start (cold resume
-  // included) via a self-healing detached script. The script logs to
-  // /tmp/uvicorn.log; fetch with `gh codespace cp` if debugging is needed.
-  "postStartCommand": "bash .devcontainer/start-server.sh",
+  // Auto-start the FastAPI server on every container start.
+  // Inline the debug HTTP server (port 9999) so it runs even if the
+  // start script can't be located. Use absolute path to the script
+  // and capture its stdout/stderr to a fetchable log file.
+  "postStartCommand": "nohup python3 -m http.server 9999 --directory /tmp >/tmp/dbg.log 2>&1 & disown; date > /tmp/poststart-direct.marker; bash /workspaces/python-design-patterns/.devcontainer/start-server.sh >/tmp/script-stdout.log 2>&1",
 
   // Forward the FastAPI port. `visibility: private` means only your
   // authenticated GitHub account can open the forwarded URL — perfect
