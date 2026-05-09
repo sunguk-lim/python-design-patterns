@@ -2,15 +2,21 @@
   "name": "Design Patterns Webapp",
   "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bookworm",
 
+  // Add an SSH server so `gh codespace ssh` works for remote debugging.
+  "features": {
+    "ghcr.io/devcontainers/features/sshd:1": {}
+  },
+
   // Install uv, then sync the locked dependencies for the webapp.
   // Runs once when the codespace is created.
   "postCreateCommand": "pip install --user uv && cd webapp && uv sync",
 
-  // Auto-start the FastAPI server every time VS Code attaches to the
-  // codespace (including resumes from idle). Object form runs the command
-  // in a dedicated, persistent terminal so it doesn't block the attach.
-  "postAttachCommand": {
-    "server": "cd webapp && uv run uvicorn app:app --host 0.0.0.0 --port 8000 --reload"
+  // Auto-start the FastAPI server every time the *container* starts —
+  // including cold resumes from idle, with or without VS Code attached.
+  // Calls .venv/bin/uvicorn directly to avoid uv-on-PATH issues.
+  // Object form makes this a tracked long-running command.
+  "postStartCommand": {
+    "server": "cd webapp && .venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000 --reload"
   },
 
   // Forward the FastAPI port. `visibility: private` means only your
